@@ -37,34 +37,7 @@ export function AuthCardShell({
   const toggleTheme = () => setTheme(isDark ? 'light' : 'dark');
 
   return (
-    <Box className="fixed inset-0 h-screen w-screen overflow-hidden select-none">
-      {/* ─── Gradient Background ─────────────────────────────────────────────── */}
-      <Box
-        className={cn(
-          'fixed inset-0 transition-colors duration-500 pointer-events-none z-0',
-          'bg-linear-to-br from-vami-wall-from via-vami-wall-via to-vami-wall-to',
-          'dark:from-vami-dark-bg dark:via-vami-wall-dark-via dark:to-vami-wall-dark-to'
-        )}
-      />
-
-      {/* ─── Chat Pattern Wallpaper ──────────────────────────────────────────── */}
-      <Box
-        className={cn(
-          'fixed inset-0 pointer-events-none transition-colors duration-500 z-0',
-          'bg-vami-wall-pattern-light/35 dark:bg-white/30'
-        )}
-        style={{
-          maskImage: "url('/assets/wallpapers/vami-chat-pattern.svg')",
-          WebkitMaskImage: "url('/assets/wallpapers/vami-chat-pattern.svg')",
-          maskSize: '374px 666px',
-          WebkitMaskSize: '374px 666px',
-          maskRepeat: 'repeat',
-          WebkitMaskRepeat: 'repeat',
-          maskPosition: 'center top',
-          WebkitMaskPosition: 'center top',
-        }}
-      />
-
+    <Box className="relative min-h-screen w-full select-none flex flex-col justify-center">
       {/* ─── Floating Theme Toggle ────────────────────────────────────────────── */}
       {mounted && (
         <Button

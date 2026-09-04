@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { AppBackground } from '@/components/atomic/atoms/app-background';
 import './globals.css';
 import { Providers } from './providers';
 
@@ -28,6 +29,9 @@ export const metadata: Metadata = {
  * Root Layout — stays a React Server Component.
  * All client providers are isolated in <Providers> ('use client' boundary).
  * This is the recommended Next.js App Router pattern.
+ *
+ * AppBackground provides the signature hardware-accelerated ambient
+ * chat pattern wallpaper persistently across every page in the application.
  */
 export default function RootLayout({
   children,
@@ -36,8 +40,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`h-full ${inter.variable}`} suppressHydrationWarning>
-      <body className="h-full font-sans antialiased bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50" suppressHydrationWarning>
-        <Providers>{children}</Providers>
+      <body className="relative h-full font-sans antialiased text-zinc-900 dark:text-zinc-50" suppressHydrationWarning>
+        <AppBackground />
+        <Providers>
+          <div className="relative z-10 h-full">
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );

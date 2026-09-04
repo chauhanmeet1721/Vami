@@ -6,3 +6,5 @@ export * from './card';
 export * from './checkbox';
 export * from './avatar';
 export * from './skeleton';
+export * from './typography';
+export * from './app-background';

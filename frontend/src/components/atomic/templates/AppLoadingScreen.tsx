@@ -13,7 +13,7 @@ export function AppLoadingScreen() {
       justify="center"
       className={cn(
         'fixed inset-0 z-50 gap-6',
-        'bg-white dark:bg-vami-dark-bg',
+        'bg-white/60 dark:bg-vami-dark-bg/60 backdrop-blur-xs',
         'transition-colors duration-300'
       )}
       role="status"
