@@ -130,7 +130,7 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
 
         {/* Helper or Error Message */}
         {errorMessage ? (
-          <Typography variant="span" id={errorId} className="text-xs text-red-500 font-medium">
+          <Typography variant="span" id={errorId} className="text-xs text-destructive font-medium">
             {errorMessage}
           </Typography>
         ) : helperText ? (

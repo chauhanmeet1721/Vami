@@ -21,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
     <Box
       as="header"
       className={cn(
-        'sticky top-0 z-40 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80',
+        'sticky top-0 z-40 w-full border-b border-border bg-surface/80 backdrop-blur-md',
         className
       )}
       {...props}

@@ -124,6 +124,24 @@ export const resetPasswordRateLimiter = rateLimit({
 });
 
 /**
+ * Verify-email rate limiter: max 20 attempts per 15 minutes per IP.
+ * Public token endpoint — must be rate-limited (architecture §8).
+ */
+export const verifyEmailRateLimiter = rateLimit({
+  store: new RedisStore({
+    sendCommand: (...args: string[]) => (RedisConnection.getClient().call as any)(...args),
+    prefix: 'rl:verify-email:',
+  }),
+  windowMs: 15 * 60 * 1000,
+  max: envConfig.isDevelopment ? 100 : 20,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+  message: 'Too many verification attempts. Please try again later.',
+  skipSuccessfulRequests: false,
+});
+
+/**
  * General API Limiter.
  * 100 requests per 1 minute per IP.
  */

@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { loginSchema, type LoginFormData } from '../schemas/auth.schemas';
 import { useLoginMutation } from '../hooks/useLoginMutation';
 import { Button } from '@/components/atomic/atoms/button';
-import { Checkbox } from '@/components/atomic/atoms/checkbox';
 import { FormField } from '@/components/atomic/molecules/form-field';
 import { PasswordInput } from '@/components/atomic/molecules/password-input';
 import { Stack } from '@/components/atomic/layout/stack';
@@ -22,8 +21,6 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const safeRedirect = getSafeRedirectUrl(searchParams.get('redirect'), '/');
-
-  const [rememberMe, setRememberMe] = React.useState(false);
 
   const {
     register,
@@ -105,17 +102,6 @@ export function LoginForm() {
             {...register('password')}
           />
         </FormField>
-
-        {/* ─── Remember Me ─────────────────────────────────────────────────── */}
-        <Flex className="pt-0.5">
-          <Checkbox
-            id="remember-me"
-            checked={rememberMe}
-            onCheckedChange={setRememberMe}
-            disabled={isLoading}
-            label={<Typography variant="muted" className="text-[13px]">Keep me signed in</Typography>}
-          />
-        </Flex>
 
         {/* ─── Submit ──────────────────────────────────────────────────────── */}
         <Flex className="pt-2">

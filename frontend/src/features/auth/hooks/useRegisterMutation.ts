@@ -10,17 +10,16 @@ export function useRegisterMutation() {
   return useMutation({
     mutationFn: (payload: RegisterPayload) => authApi.register(payload),
     onSuccess: (res) => {
-      if (res.data) {
+      // Only auto-login when tokens were issued (email verification may block sessions)
+      if (res.data?.accessToken && res.data.user) {
         dispatch({
-          type: 'LOGIN_SUCCESS', // Registration acts as a login if successful
+          type: 'LOGIN_SUCCESS',
           payload: {
             user: res.data.user,
             accessToken: res.data.accessToken,
             activeSessionId: res.data.session?._id,
           },
         });
-
-        // Invalidate relevant queries upon registration
         queryClient.invalidateQueries({ queryKey: ['auth'] });
       }
     },

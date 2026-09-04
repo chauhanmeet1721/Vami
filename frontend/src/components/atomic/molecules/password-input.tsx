@@ -11,9 +11,8 @@ export interface PasswordInputProps extends Omit<InputProps, 'type'> {
 }
 
 export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ className, showToggle = true, hasError, ...props }, ref) => {
+  ({ className, showToggle = true, hasError, disabled, ...props }, ref) => {
     const [showPassword, setShowPassword] = React.useState(false);
-    const disabled = props.value === '' || props.value === undefined || props.disabled;
 
     return (
       <Box className="relative w-full">
@@ -21,6 +20,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           type={showPassword ? 'text' : 'password'}
           className={cn('pr-10', className)}
           hasError={hasError}
+          disabled={disabled}
           ref={ref}
           {...props}
         />
@@ -31,8 +31,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
             size="icon"
             className={cn(
               'absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent',
-              'text-zinc-500 dark:text-zinc-400',
-              disabled && 'opacity-50 cursor-not-allowed'
+              'text-muted-foreground'
             )}
             onClick={() => setShowPassword((prev) => !prev)}
             disabled={disabled}

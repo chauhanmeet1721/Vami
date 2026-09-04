@@ -8,14 +8,21 @@ import { Stack } from '../layout/stack';
 import { Typography } from '../atoms/typography';
 
 function FeatureErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  const isDev = process.env.NODE_ENV === 'development';
+  const message =
+    isDev && error instanceof Error
+      ? error.message
+      : 'An unexpected error occurred. Please try again.';
+
   return (
-    <Flex direction="col" align="center" justify="center" className="p-8 m-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg text-center h-full min-h-75">
-      <Flex align="center" justify="center" className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/50 mb-4">
+    <Flex direction="col" align="center" justify="center" className="p-8 m-4 bg-destructive/10 border border-destructive/30 rounded-lg text-center h-full min-h-75">
+      <Flex align="center" justify="center" className="w-12 h-12 rounded-full bg-destructive/15 mb-4">
         <svg
-          className="w-6 h-6 text-red-600 dark:text-red-400"
+          className="w-6 h-6 text-destructive"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -29,8 +36,8 @@ function FeatureErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
         <Typography variant="h2" className="text-lg">
           Something went wrong in this section
         </Typography>
-        <Typography variant="p" className="text-zinc-600 dark:text-zinc-400 max-w-md">
-          {error instanceof Error ? error.message : 'An unexpected error occurred.'}
+        <Typography variant="p" className="text-muted-foreground max-w-md">
+          {message}
         </Typography>
       </Stack>
       <Button onClick={resetErrorBoundary}>

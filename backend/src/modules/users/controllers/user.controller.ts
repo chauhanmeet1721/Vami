@@ -15,10 +15,12 @@ export class UserController {
     }
   };
 
-  getAllUsers = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const users = await this.userService.getAllUsers();
-      ApiResponse.success(res, users, 'Users retrieved successfully');
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 50;
+      const result = await this.userService.getAllUsers(page, limit);
+      ApiResponse.success(res, result, 'Users retrieved successfully');
     } catch (error) {
       next(error);
     }

@@ -40,7 +40,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`h-full ${inter.variable}`} suppressHydrationWarning>
-      <body className="relative h-full font-sans antialiased text-zinc-900 dark:text-zinc-50" suppressHydrationWarning>
+      <body className="relative h-full font-sans antialiased text-foreground bg-background" suppressHydrationWarning>
         <AppBackground />
         <Providers>
           <div className="relative z-10 h-full">

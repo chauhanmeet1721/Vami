@@ -17,8 +17,9 @@ Before creating ANY state, ask in order:
 3. **Is it static configuration that changes at most once per session?** ? Use **React Context** (existing `AuthProvider` is the only Context in the app).
 
 ### 1.2 Forbidden Patterns
-- Never store server data (user profiles, messages, session lists) in `AuthProvider`, Zustand, or any Context.
-- Never use `useState + useEffect` to fetch API data. Use `useQuery` instead.
+- Never store server lists (messages, session lists, user directories) in Zustand or ad-hoc Context.
+- `AuthProvider` may hold **identity only** (`user`, auth flags) from boot `/auth/me` — not feature domain lists. See §16.
+- Never use `useState + useEffect` to fetch API data for features. Use `useQuery` instead. Exception: AuthProvider boot refresh/me sequence (§16).
 - Never create a new Context provider without approval. The only allowed Context is `AuthProvider`.
 - Never use Redux or any additional global state library.
 
@@ -73,7 +74,7 @@ Query keys must be arrays following this pattern:
 ## 4. Authentication Architecture Rules
 
 ### 4.1 Token Handling
-- Access tokens: memory only + sessionStorage backup. NEVER localStorage.
+- Access tokens: memory only (`inMemoryAccessToken`). NEVER localStorage or sessionStorage.
 - Refresh tokens: HttpOnly cookies only. NEVER readable by JavaScript.
 - Never put tokens in the URL.
 
@@ -87,7 +88,8 @@ Query keys must be arrays following this pattern:
 - `ProtectedRoute` belongs in layout files only, never inside page components.
 
 ### 4.4 `useAuth()` Hook
-- Returns: `user`, `isAuthenticated`, `isLoading`, `login`, `register`, `logout`.
+- Returns identity state only: `user`, `isAuthenticated`, `isLoading` (and related flags).
+- Auth actions (`login`, `register`, `logout`) live in TanStack Query mutation hooks — not on `useAuth()`.
 - Only for Client Components. Do not pass `user` as props — components call `useAuth()` directly.
 
 ---
@@ -131,12 +133,12 @@ Always use `ApiResponse.success()` or `ApiResponse.error()`. Never deviate from:
 
 ---
 
-## 7. Monorepo Migration Readiness
+## 7. Monorepo Shared Packages
 
-- Frontend: Shared logic in `src/core/` becomes `packages/core` in a Turborepo.
-- Backend: Shared infrastructure in `src/core/`. Modules are self-contained.
+- Workspace already uses pnpm + Turborepo. Shared contracts belong in `packages/*` (e.g. `@vami/schemas`).
+- Frontend/backend `src/core/` remains app-local until extracted intentionally.
 - SSO: New products add entries to `User.apps[]`. No schema migration needed.
-- Import paths with `@/core/*` and `@/features/*` remain valid after restructure.
+- Import paths with `@/core/*` and `@/features/*` remain valid after package extraction.
 
 ---
 

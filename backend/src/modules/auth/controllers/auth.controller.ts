@@ -3,32 +3,28 @@ import { AuthService, ClientContext } from '../services/auth.service';
 import { ApiResponse } from '../../../core/utils/response.util';
 import { UnauthorizedError } from '../../../core/errors/app-error';
 import { envConfig } from '../../../core/config/env.config';
+import { JwtUtil } from '../../../core/utils/jwt.util';
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   private extractContext(req: Request): ClientContext {
-    const forwarded = req.headers['x-forwarded-for'];
-    const ipAddress =
-      typeof forwarded === 'string'
-        ? forwarded.split(',')[0].trim()
-        : req.socket.remoteAddress || 'Unknown';
-
     return {
       userAgent: req.headers['user-agent'] || 'Unknown',
-      ipAddress,
+      // Prefer Express req.ip when trust proxy is configured
+      ipAddress: req.ip || req.socket.remoteAddress || 'Unknown',
     };
   }
 
   private setRefreshTokenCookie(res: Response, token: string): void {
     const isCrossDomain = envConfig.isProduction || envConfig.isPreview;
-    // Clear legacy /api/auth path cookie if present to prevent collision
+    const maxAgeMs = JwtUtil.parseDurationSeconds(envConfig.JWT_REFRESH_EXPIRES_IN) * 1000;
     res.clearCookie('refreshToken', { path: '/api/auth' });
     res.cookie('refreshToken', token, {
       httpOnly: true,
       secure: isCrossDomain,
       sameSite: isCrossDomain ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: maxAgeMs,
       path: '/',
     });
   }
@@ -53,6 +49,20 @@ export class AuthController {
     try {
       const context = this.extractContext(req);
       const result = await this.authService.register(req.body, context);
+
+      if (result.requiresEmailVerification || !result.refreshToken || !result.accessToken) {
+        ApiResponse.success(
+          res,
+          {
+            user: result.user,
+            requiresEmailVerification: true,
+          },
+          'Account created. Please verify your email before signing in.',
+          201
+        );
+        return;
+      }
+
       this.setRefreshTokenCookie(res, result.refreshToken);
 
       ApiResponse.success(
@@ -74,6 +84,9 @@ export class AuthController {
     try {
       const context = this.extractContext(req);
       const result = await this.authService.login(req.body, context);
+      if (!result.refreshToken || !result.accessToken) {
+        throw new UnauthorizedError('Authentication failed');
+      }
       this.setRefreshTokenCookie(res, result.refreshToken);
 
       ApiResponse.success(

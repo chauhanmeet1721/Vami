@@ -9,6 +9,7 @@ import {
   resetPasswordBodySchema,
   verifyEmailBodySchema,
   resendVerificationSchema,
+  refreshBodySchema,
 } from '../dtos/auth.dto';
 import {
   loginRateLimiter,
@@ -17,6 +18,7 @@ import {
   forgotPasswordRateLimiter,
   resendVerificationRateLimiter,
   resetPasswordRateLimiter,
+  verifyEmailRateLimiter,
 } from '../../../core/middlewares/rate-limit.middleware';
 
 export const createAuthRouter = (authController: AuthController): Router => {
@@ -25,10 +27,20 @@ export const createAuthRouter = (authController: AuthController): Router => {
   // ── Public Endpoints — rate limited + validated ───────────────────────────
   router.post('/register', registerRateLimiter, validate(registerSchema), authController.register);
   router.post('/login', loginRateLimiter, validate(loginSchema), authController.login);
-  router.post('/refresh', refreshRateLimiter, authController.refresh);
+  router.post(
+    '/refresh',
+    refreshRateLimiter,
+    validate(refreshBodySchema),
+    authController.refresh
+  );
 
   // ── Email Verification ────────────────────────────────────────────────────
-  router.post('/verify-email', validate(verifyEmailBodySchema), authController.verifyEmail);
+  router.post(
+    '/verify-email',
+    verifyEmailRateLimiter,
+    validate(verifyEmailBodySchema),
+    authController.verifyEmail
+  );
   router.post(
     '/resend-verification',
     resendVerificationRateLimiter,

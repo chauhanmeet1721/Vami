@@ -5,9 +5,9 @@
  * Disallows protocol-relative URLs (e.g. "//evil.com") and absolute external schemes ("https://evil.com").
  *
  * @param url The raw redirect string (typically from URL search params)
- * @param fallback Safe default destination (defaults to '/chat')
+ * @param fallback Safe default destination (defaults to '/')
  */
-export function getSafeRedirectUrl(url: string | null | undefined, fallback = '/chat'): string {
+export function getSafeRedirectUrl(url: string | null | undefined, fallback = '/'): string {
   if (!url || typeof url !== 'string') {
     return fallback;
   }

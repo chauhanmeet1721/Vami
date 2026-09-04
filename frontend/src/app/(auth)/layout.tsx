@@ -2,7 +2,7 @@
  * Auth Layout — applies guest-only route protection to all pages in (auth)/.
  *
  * Any page nested under (auth)/ (login, register, forgot-password, etc.)
- * will redirect authenticated users to /chat automatically.
+ * will redirect authenticated users to / automatically.
  *
  * The route group name (auth) does NOT appear in the URL.
  * /app/(auth)/login/page.tsx → URL: /login

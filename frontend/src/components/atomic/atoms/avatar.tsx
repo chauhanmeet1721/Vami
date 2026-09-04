@@ -7,7 +7,7 @@ import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const avatarVariants = cva(
-  'relative inline-flex shrink-0 items-center justify-center rounded-full select-none overflow-hidden bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-semibold',
+  'relative inline-flex shrink-0 items-center justify-center rounded-full select-none overflow-hidden bg-surface-elevated text-muted-foreground font-semibold',
   {
     variants: {
       size: {
@@ -25,14 +25,14 @@ export const avatarVariants = cva(
 );
 
 export const statusDotVariants = cva(
-  'absolute bottom-0 right-0 rounded-full ring-2 ring-white dark:ring-zinc-950',
+  'absolute bottom-0 right-0 rounded-full ring-2 ring-surface',
   {
     variants: {
       status: {
-        online: 'bg-emerald-500',
-        offline: 'bg-zinc-400',
-        busy: 'bg-red-500',
-        away: 'bg-amber-500',
+        online: 'bg-success',
+        offline: 'bg-muted',
+        busy: 'bg-destructive',
+        away: 'bg-warning',
       },
       size: {
         xs: 'h-1.5 w-1.5',

@@ -21,7 +21,7 @@ import {
   BadRequestError,
 } from '../../../core/errors/app-error';
 import { IUser } from '../../users/models/user.model';
-import { ISession } from '../models/session.model';
+import { PublicSession, toPublicSession } from '../mappers/session.mapper';
 
 export interface ClientContext {
   userAgent: string;
@@ -30,10 +30,13 @@ export interface ClientContext {
 
 export interface AuthSessionResult {
   user: Omit<IUser, 'password'>;
-  accessToken: string;
-  refreshToken: string;
-  session: ISession;
+  accessToken?: string;
+  refreshToken?: string;
+  session?: PublicSession;
+  requiresEmailVerification?: boolean;
 }
+
+const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000; // 1 hour — architecture §13
 
 export interface RefreshResult {
   accessToken: string;
@@ -104,6 +107,12 @@ export class AuthService {
         token,
         appUrl,
       });
+
+      const { password: _, ...safeUser } = newUser;
+      return {
+        user: safeUser,
+        requiresEmailVerification: true,
+      };
     }
 
     return this.createSessionAndTokens(newUser, context);
@@ -120,6 +129,15 @@ export class AuthService {
 
     if (user.status === 'suspended') {
       throw new ForbiddenError('Your account has been suspended. Please contact support.');
+    }
+
+    if (
+      envConfig.REQUIRE_EMAIL_VERIFICATION &&
+      (user.status === 'pending' || !user.isEmailVerified)
+    ) {
+      throw new ForbiddenError(
+        'Please verify your email address before signing in. Check your inbox for a verification link.'
+      );
     }
 
     const isValidPassword = await Argon2Util.verify(user.password, data.password);
@@ -153,9 +171,13 @@ export class AuthService {
     const tokenHash = JwtUtil.hashToken(rawRefreshToken);
     const session = await this.sessionRepository.findByRefreshTokenHash(tokenHash);
 
-    // REUSE DETECTION: Token not found or session was already revoked
-    if (!session || session.isRevoked) {
-      // This is a security event — log it with structured fields for alerting
+    // Session document missing (TTL expiry / never existed) — expired, not reuse.
+    if (!session) {
+      throw new UnauthorizedError('Invalid or expired refresh token');
+    }
+
+    // REUSE DETECTION: presented refresh matches a revoked session (rotated/stolen).
+    if (session.isRevoked) {
       logger.warn(
         { familyId: decoded.familyId, userId: decoded.userId },
         '[Security] Refresh token reuse detected — revoking entire session family'
@@ -171,6 +193,14 @@ export class AuthService {
     if (!user || user.status === 'suspended') {
       await this.sessionRepository.revokeSession(String(session._id));
       throw new UnauthorizedError('User account not found or suspended');
+    }
+
+    if (
+      envConfig.REQUIRE_EMAIL_VERIFICATION &&
+      (user.status === 'pending' || !user.isEmailVerified)
+    ) {
+      await this.sessionRepository.revokeSession(String(session._id));
+      throw new ForbiddenError('Please verify your email address before continuing.');
     }
 
     // Generate new refresh token in the same family (Rotation)
@@ -304,7 +334,7 @@ export class AuthService {
     // Generate secure 32-byte token
     const token = crypto.randomBytes(32).toString('hex');
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    const expiresAt = new Date(Date.now() + PASSWORD_RESET_TTL_MS);
 
     await this.passwordResetRepository.create({
       userId: user._id,
@@ -378,8 +408,9 @@ export class AuthService {
     return safeUser;
   }
 
-  async getUserSessions(userId: string): Promise<ISession[]> {
-    return this.sessionRepository.findActiveByUserId(userId);
+  async getUserSessions(userId: string): Promise<PublicSession[]> {
+    const sessions = await this.sessionRepository.findActiveByUserId(userId);
+    return sessions.map(toPublicSession);
   }
 
   async revokeSession(sessionId: string, userId: string): Promise<void> {
@@ -447,7 +478,8 @@ export class AuthService {
       user: safeUser,
       accessToken,
       refreshToken: refreshTokenData.token,
-      session,
+      session: toPublicSession(session),
+      requiresEmailVerification: false,
     };
   }
 }

@@ -17,6 +17,18 @@ export class MongoUserRepository implements IUserRepository {
     return users;
   }
 
+  async findPaginated(
+    filter: Record<string, unknown>,
+    skip: number,
+    limit: number
+  ): Promise<{ items: IUser[]; total: number }> {
+    const [items, total] = await Promise.all([
+      UserModel.find(filter).skip(skip).limit(limit).lean<IUser[]>().exec(),
+      UserModel.countDocuments(filter).exec(),
+    ]);
+    return { items, total };
+  }
+
   async create(item: Partial<IUser>): Promise<IUser> {
     const user = new UserModel(item);
     const saved = await user.save();

@@ -1,35 +1,36 @@
 import { RedisConnection } from '../database/redis.connection';
-import { JwtUtil } from '../utils/jwt.util';
-import { envConfig } from '../config/env.config';
+
+export interface StampCacheEntry {
+  stamp: string;
+  status: string;
+}
 
 export class SecurityStampCache {
-  /**
-   * TTL matches the access token lifetime.
-   * The stamp only needs to be cached for as long as a token issued with it can still be used.
-   * Invalidation on password change/suspension is handled by SecurityStampCache.invalidate().
-   */
-  private static readonly TTL_SECONDS = JwtUtil.parseDurationSeconds(envConfig.JWT_ACCESS_EXPIRES_IN);
+  /** Architecture §10 — short TTL so suspension/status changes propagate quickly. */
+  private static readonly TTL_SECONDS = 30;
 
-  /**
-   * Caches a user's security stamp for quick validation in middleware.
-   */
-  static async set(userId: string, stamp: string): Promise<void> {
+  static async set(userId: string, stamp: string, status: string): Promise<void> {
     const client = RedisConnection.getClient();
-    await client.set(`stamp:${userId}`, stamp, 'EX', this.TTL_SECONDS);
+    const payload = JSON.stringify({ stamp, status } satisfies StampCacheEntry);
+    await client.set(`stamp:${userId}`, payload, 'EX', this.TTL_SECONDS);
   }
 
-  /**
-   * Retrieves a user's security stamp from cache.
-   */
-  static async get(userId: string): Promise<string | null> {
+  static async get(userId: string): Promise<StampCacheEntry | null> {
     const client = RedisConnection.getClient();
-    return await client.get(`stamp:${userId}`);
+    const raw = await client.get(`stamp:${userId}`);
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw) as StampCacheEntry;
+      if (typeof parsed.stamp === 'string' && typeof parsed.status === 'string') {
+        return parsed;
+      }
+      return null;
+    } catch {
+      // Legacy plain-string cache values — treat as miss
+      return null;
+    }
   }
 
-  /**
-   * Invalidates a user's security stamp cache.
-   * Should be called whenever a password changes or account is suspended.
-   */
   static async invalidate(userId: string): Promise<void> {
     const client = RedisConnection.getClient();
     await client.del(`stamp:${userId}`);

@@ -42,6 +42,15 @@ class EmailService {
     }
   }
 
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   /**
    * Sends an email. If no API key is configured, logs and returns without sending.
    * Throws on Resend API errors so the caller can handle delivery failures.
@@ -86,6 +95,7 @@ class EmailService {
     token: string;
     appUrl: string;
   }): Promise<void> {
+    const safeName = this.escapeHtml(params.name);
     const verifyUrl = `${params.appUrl}/verify-email?token=${encodeURIComponent(params.token)}`;
 
     await this.send({
@@ -99,7 +109,7 @@ class EmailService {
               <span style="color: white; font-size: 24px;">✈</span>
             </div>
             <h1 style="color: #111827; font-size: 24px; font-weight: 700; margin: 16px 0 4px;">Verify your email</h1>
-            <p style="color: #6b7280; font-size: 14px; margin: 0;">Hi ${params.name}, welcome to Vami!</p>
+            <p style="color: #6b7280; font-size: 14px; margin: 0;">Hi ${safeName}, welcome to Vami!</p>
           </div>
 
           <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
@@ -136,6 +146,7 @@ class EmailService {
     token: string;
     appUrl: string;
   }): Promise<void> {
+    const safeName = this.escapeHtml(params.name);
     const resetUrl = `${params.appUrl}/reset-password?token=${encodeURIComponent(params.token)}`;
 
     await this.send({
@@ -149,7 +160,7 @@ class EmailService {
               <span style="color: white; font-size: 24px;">🔒</span>
             </div>
             <h1 style="color: #111827; font-size: 24px; font-weight: 700; margin: 16px 0 4px;">Reset your password</h1>
-            <p style="color: #6b7280; font-size: 14px; margin: 0;">Hi ${params.name}</p>
+            <p style="color: #6b7280; font-size: 14px; margin: 0;">Hi ${safeName}</p>
           </div>
 
           <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0 0 24px;">

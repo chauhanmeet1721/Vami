@@ -39,8 +39,9 @@ export interface ISession {
 
 export interface AuthResponseData {
   user: UserProfile;
-  accessToken: string;
+  accessToken?: string;
   session?: ISession;
+  requiresEmailVerification?: boolean;
 }
 
 export interface LoginCredentials {

@@ -1,18 +1,17 @@
 import { z } from 'zod';
+import {
+  loginSchema as sharedLoginSchema,
+  forgotPasswordSchema as sharedForgotSchema,
+  passwordSchema,
+  verifyEmailBodySchema,
+} from '@vami/schemas';
 
 /**
- * Client-side validation schemas for auth forms.
- * These deliberately mirror the backend's Zod schemas in auth.dto.ts
- * so that validation messages are consistent on both sides.
+ * Client form schemas — API fields aligned with packages/schemas;
+ * confirmPassword is UI-only.
  */
 
-export const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email is required')
-    .email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
+export const loginSchema = sharedLoginSchema;
 
 export const registerSchema = z
   .object({
@@ -31,15 +30,8 @@ export const registerSchema = z
           message: 'Username must be 3-20 characters (lowercase letters, numbers, and underscores)',
         }
       ),
-    email: z
-      .string()
-      .min(1, 'Email is required')
-      .email('Please enter a valid email address'),
-    password: z
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-      .regex(/[0-9]/, 'Password must contain at least one number'),
+    email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
+    password: passwordSchema,
     confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -47,20 +39,11 @@ export const registerSchema = z
     path: ['confirmPassword'],
   });
 
-export const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email is required')
-    .email('Please enter a valid email address'),
-});
+export const forgotPasswordSchema = sharedForgotSchema;
 
 export const resetPasswordSchema = z
   .object({
-    password: z
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-      .regex(/[0-9]/, 'Password must contain at least one number'),
+    password: passwordSchema,
     confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -68,9 +51,7 @@ export const resetPasswordSchema = z
     path: ['confirmPassword'],
   });
 
-export const verifyEmailSchema = z.object({
-  token: z.string().min(1, 'Verification token is required'),
-});
+export const verifyEmailSchema = verifyEmailBodySchema;
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;

@@ -18,6 +18,12 @@ import { apiLimiter } from './core/middlewares/rate-limit.middleware';
 export const createApp = (): Application => {
   const app = express();
 
+  // Required behind reverse proxies (Vercel, Railway, Cloudflare, nginx)
+  // so req.ip and rate-limit keys reflect the real client.
+  if (envConfig.isProduction || envConfig.isPreview) {
+    app.set('trust proxy', 1);
+  }
+
   // ── Security Headers (OWASP) ───────────────────────────────────────────────
   // Configured for an API-only server: CSP is disabled (we serve no HTML)
   // crossOriginResourcePolicy is set to 'cross-origin' to allow Vercel frontend
@@ -64,11 +70,8 @@ export const createApp = (): Application => {
       }
 
       if (envConfig.isPreview) {
-        // Accept Vercel preview deployments and the explicitly configured origin
-        if (
-          /^https:\/\/.*\.vercel\.app$/.test(origin) ||
-          origin === envConfig.CORS_ORIGIN
-        ) {
+        // Only the configured CORS_ORIGIN — not every *.vercel.app deployment
+        if (origin === envConfig.CORS_ORIGIN) {
           return callback(null, true);
         }
       }
@@ -122,7 +125,8 @@ export const createApp = (): Application => {
     const mongoReady = await DatabaseConnection.ping();
     const redisReady = await RedisConnection.ping();
 
-    const isReady = mongoReady; // Mongo is critical; Redis might be optional in local dev
+    // Redis backs rate limits, stamp cache, and token blocklist — required outside local.
+    const isReady = envConfig.isDevelopment ? mongoReady : mongoReady && redisReady;
     const statusData = {
       status: isReady ? 'READY' : 'DEGRADED',
       database: mongoReady ? 'CONNECTED' : 'DISCONNECTED',

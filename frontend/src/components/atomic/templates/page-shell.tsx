@@ -18,14 +18,14 @@ export const PageShell: React.FC<PageShellProps> = ({
   className,
 }) => {
   return (
-    <Flex direction="col" className="min-h-screen bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-50">
+    <Flex direction="col" className="min-h-screen bg-background text-foreground antialiased">
       <Header title={headerTitle} />
       <Box as="main" className={cn('flex-1', className)}>
         <Container className="py-8">
           {children}
         </Container>
       </Box>
-      <Box as="footer" className="border-t border-zinc-200 py-6 text-center text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+      <Box as="footer" className="border-t border-border py-6 text-center text-xs text-muted-foreground">
         <Typography variant="p" className="text-xs">
           © {new Date().getFullYear()} Vami Architecture. Clean Architecture & Atomic Design.
         </Typography>

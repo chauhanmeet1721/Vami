@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@vami/schemas": ["../packages/schemas/src/index.ts"]
     }
   },
   "include": [

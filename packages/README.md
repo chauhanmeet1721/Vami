@@ -1,9 +1,13 @@
 # Packages
 
-This directory is for shared workspace packages in the Vami monorepo.
+Shared workspace packages for the Vami monorepo.
 
-To create a new package:
-1. Create a folder (e.g., `packages/ui`)
-2. Initialize it with a `package.json` naming it `@vami/ui`
-3. Add it to `pnpm-workspace.yaml` if not already covered by `packages/*`
-4. Use it in apps by adding `"@vami/ui": "workspace:*"` to their dependencies.
+## `@vami/schemas`
+
+Zod auth contracts (login, register, password reset, verify email, refresh body).
+
+- Source: `packages/schemas/src/index.ts`
+- Frontend imports via `@vami/schemas` (tsconfig path + workspace dep)
+- Backend DTOs in `backend/src/modules/auth/dtos/auth.dto.ts` must stay in sync until the schemas package is wired into the CommonJS `tsc` build graph
+
+To add another package: create `packages/<name>`, add `"@vami/<name>": "workspace:*"` in consumers.

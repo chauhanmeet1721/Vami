@@ -45,12 +45,17 @@ export function RegisterForm() {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await registerUser({
+      const res = await registerUser({
         name: data.name,
         email: data.email,
         password: data.password,
         username: data.username || undefined,
       });
+      if (res.data?.requiresEmailVerification || !res.data?.accessToken) {
+        toast.success('Account created. Please verify your email before signing in.');
+        router.push('/login');
+        return;
+      }
       toast.success('Account created successfully');
       router.push('/');
     } catch (err: unknown) {
