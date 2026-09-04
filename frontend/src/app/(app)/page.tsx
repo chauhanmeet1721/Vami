@@ -56,7 +56,7 @@ export default function AuthenticatedHomePage() {
       {/* ─── Boxed Desktop Container (Telegram Web Shell) ───────────────── */}
       <Box
         className={cn(
-          'w-full h-full xl:max-w-[1440px] xl:h-[calc(100dvh-32px)]',
+          'w-full h-full xl:max-w-360 xl:h-[calc(100dvh-32px)]',
           'xl:rounded-3xl xl:shadow-[0_24px_64px_rgba(0,0,0,0.45)]',
           'border-0 xl:border border-vami-light-border/80 dark:border-vami-dark-border',
           'bg-white/95 dark:bg-vami-dark-surface/95 backdrop-blur-md',
@@ -126,7 +126,7 @@ export default function AuthenticatedHomePage() {
         <Box className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-8 no-scrollbar select-text">
           <Container size="lg" className="px-0 sm:px-4 py-2 space-y-8">
             {/* User Profile Banner Card */}
-            <Card className="border-vami-light-border dark:border-vami-dark-border bg-gradient-to-r from-zinc-50 to-white dark:from-vami-dark-elevated/70 dark:to-vami-dark-surface shadow-sm">
+            <Card className="border-vami-light-border dark:border-vami-dark-border bg-linear-to-r from-zinc-50 to-white dark:from-vami-dark-elevated/70 dark:to-vami-dark-surface shadow-sm">
               <CardContent className="p-6 sm:p-8">
                 <Flex direction="col" gap={6} className="sm:flex-row sm:items-center sm:justify-between">
                   <Flex align="center" gap={4} className="min-w-0">
