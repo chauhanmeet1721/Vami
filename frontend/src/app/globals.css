@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  /* ─── Brand Blues ─────────────────────────────────────────────── */
+  --color-vami-blue: #3390ec;
+  --color-vami-blue-hover: #2b7ecc;
+  --color-vami-blue-active: #236bb0;
+  --color-vami-blue-link-hover-dark: #52a5f5;
+
+  /* ─── Dark Mode Surfaces ──────────────────────────────────────── */
+  --color-vami-dark-bg: #0e1621;
+  --color-vami-dark-surface: #18222d;
+  --color-vami-dark-elevated: #242f3d;
+  --color-vami-dark-input: #1e2a36;
+
+  /* ─── Borders ────────────────────────────────────────────────── */
+  --color-vami-dark-border: #232e3c;
+  --color-vami-dark-border-input: #2b3947;
+  --color-vami-dark-border-checkbox: #2f3b47;
+  --color-vami-light-border: #dfe1e5;
+
+  /* ─── Text / Muted ───────────────────────────────────────────── */
+  --color-vami-muted: #707579;
+  --color-vami-muted-dark: #8a9aa8;
+  --color-vami-placeholder: #9ba0a5;
+  --color-vami-placeholder-dark: #7d8b99;
+
+  /* ─── Status ─────────────────────────────────────────────────── */
+  --color-vami-error: #e53935;
+
+  /* ─── Auth Wallpaper (light gradient + pattern mask) ─────────── */
+  --color-vami-wall-from: #e0f1bc;
+  --color-vami-wall-via: #bfe2a7;
+  --color-vami-wall-to: #99cf8e;
+  --color-vami-wall-dark-via: #111c27;
+  --color-vami-wall-dark-to: #0a111a;
+  --color-vami-wall-pattern-light: #1a3d17;
+}
+
+/* Custom scrollbar suppression for Vami native app feel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,48 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Vami — Root .gitignore
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── OS & Editor ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/settings.json
+*.suo
+*.user
+
+# ── Environment Files (NEVER commit secrets) ──────────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.preview.local
+.env.production.local
+# .env.example is intentionally committed as a template
+
+# ── Node Modules ──────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Build Outputs ─────────────────────────────────────────────────────────────
+dist/
+build/
+.next/
+out/
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── TypeScript ────────────────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ── Testing ───────────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+# Docker compose env overrides should not be committed
+docker-compose.override.yml
