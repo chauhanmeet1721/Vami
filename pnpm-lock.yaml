@@ -102,6 +102,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.102.8
         version: 5.102.8(react@19.2.8)
+      '@vami/schemas':
+        specifier: workspace:*
+        version: link:../packages/schemas
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -168,6 +171,16 @@ importers:
         version: 4.3.3
       typescript:
         specifier: ^5
+        version: 5.9.3
+
+  packages/schemas:
+    dependencies:
+      zod:
+        specifier: ^4.5.4
+        version: 4.5.4
+    devDependencies:
+      typescript:
+        specifier: ^5.8.2
         version: 5.9.3
 
 packages:
