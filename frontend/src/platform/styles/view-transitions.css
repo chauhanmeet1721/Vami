@@ -1,0 +1,16 @@
+/**
+ * View Transitions — base rules only.
+ * Per-toggle origin/clip is injected with concrete px values in JS
+ * (CSS variables on <html> do not reliably inherit into ::view-transition-*
+ * — that caused first-click reveal at viewport center instead of the button).
+ */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-image-pair(root) {
+  isolation: auto;
+}
